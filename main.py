@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 import boto3
 import os
+import time
 
 load_dotenv()
 
@@ -44,25 +45,34 @@ def upload_to_s3(local_path, s3_path, zip_name="upload.zip"):
 
     s3.upload_file(zip_path, S3_BUCKET_NAME, s3_key)
     print(f"Uploaded {zip_path} to s3://{S3_BUCKET_NAME}/{s3_key}")
+    return s3_key
 
 
-def send_done_signal():
-    # try:
-    sns.publish(
-        TargetArn=SNS_ARN,
-        Message="Done training",
-        Subject="Testing",
-    )
+def send_done_signal(model, time, s3_key):
+    message = f"""Finished training
+---
+Model: {model}
+Saved at: s3://{S3_BUCKET_NAME}/{s3_key}
+Time taken: {time:.6} s
+    """
+    subject = f"Training {model}"
+    try:
+        sns.publish(
+            TargetArn=SNS_ARN,
+            Message=message,
+            Subject=subject,
+        )
 
-
-# except Exception as e:
-#     print("Failed to send message")
-#     pass
+    except Exception as e:
+        print("Failed to send message")
+        pass
 
 
 if __name__ == "__main__":
     if DEPLOYMENT != "dev":
         download_dataset_from_s3("yolo.zip")
+    time_start = time.time()
     train_yolo()
-    upload_to_s3("./runs", "yolo_runs/", "yolo_runs.zip")
-    send_done_signal()
+    time_taken = time.time() - time_start
+    s3_key = upload_to_s3("./runs", "yolo_runs/", "yolo_runs.zip")
+    send_done_signal("yolo", time_taken, s3_key)
