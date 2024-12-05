@@ -69,10 +69,22 @@ Time taken: {time:.6} s
 
 
 if __name__ == "__main__":
+    model = os.getenv("MODEL_TO_TRAIN")
+    if model is None:
+        model = "yolo"
+
+    dataset = None
+    if model == "yolo":
+        dataset = "yolo"
+
     if DEPLOYMENT != "dev":
-        download_dataset_from_s3("yolo.zip")
+        download_dataset_from_s3(f"{dataset}.zip")
+
     time_start = time.time()
-    train_yolo()
+
+    if model == "yolo":
+        train_yolo()
+
     time_taken = time.time() - time_start
-    s3_key = upload_to_s3("./runs", "yolo_runs/", "yolo_runs.zip")
-    send_done_signal("yolo", time_taken, s3_key)
+    s3_key = upload_to_s3("./runs", f"{model}_runs/", f"{model}_runs.zip")
+    send_done_signal(model, time_taken, s3_key)
