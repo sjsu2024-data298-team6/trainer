@@ -11,7 +11,6 @@ load_dotenv()
 
 sns = boto3.client("sns", region_name="us-east-1")
 s3 = boto3.client("s3")
-ec2 = boto3.client("ec2")
 
 S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 SNS_ARN = os.getenv("SNS_ARN")
