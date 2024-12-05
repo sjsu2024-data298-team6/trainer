@@ -53,9 +53,21 @@ def send_done_signal(model, time, s3_key):
 ---
 Model: {model}
 Saved at: s3://{S3_BUCKET_NAME}/{s3_key}
-Time taken: {time:.6} s
-    """
+Time taken: {time:.6} s"""
     subject = f"Training {model}"
+    send_sns(subject, message)
+
+
+def send_start_signal(model):
+    message = f"""Started training
+---
+Model: {model}
+timestamp: {time.time()}"""
+    subject = f"Training {model}"
+    send_sns(subject, message)
+
+
+def send_sns(subject, message):
     try:
         sns.publish(
             TargetArn=SNS_ARN,
@@ -70,6 +82,7 @@ Time taken: {time:.6} s
 
 if __name__ == "__main__":
     model = os.getenv("MODEL_TO_TRAIN")
+    send_start_signal(model)
     if model is None:
         model = "yolo"
 
