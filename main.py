@@ -20,6 +20,8 @@ DEPLOYMENT = os.getenv("DEPLOYMENT")
 def download_dataset_from_s3(name):
     s3_key = os.path.join("dataset", name)
     s3.download_file(S3_BUCKET_NAME, s3_key, name)
+    with zipfile.ZipFile(name, "r") as z:
+        z.extractall("data")
 
 
 def train(model):
