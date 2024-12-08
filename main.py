@@ -30,10 +30,10 @@ def train(model):
 
     try:
         train_main()
-    except:
+    except Exception as e:
         send_sns(
             "Model training failed",
-            f"Training of model '{model}' failed somewhere, please check manually",
+            f"Training of model '{model}' failed somewhere, please check manually\n----\n\nExcpetion:\n{e}",
         )
 
 
