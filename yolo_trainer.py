@@ -13,7 +13,7 @@ def train_main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = YOLO("yolo11n.pt")
     results = model.train(
-        data="/content/data/data.yaml",
+        data="./data/data.yaml",
         epochs=epochs,
         imgsz=imgsz,
         batch=16,
