@@ -1,5 +1,5 @@
 import torch
-from ultralytics import RTDETR
+from ultralytics import YOLO
 import json
 
 
@@ -11,7 +11,7 @@ def train_main():
     imgsz = params["imgsz"] if "imgsz" in params.keys() else 640
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = RTDETR("rtdetr-l.pt")
+    model = YOLO("yolo11n.pt")
     results = model.train(
         data="/content/data/data.yaml",
         epochs=epochs,
