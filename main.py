@@ -22,11 +22,19 @@ def download_dataset_from_s3(name):
     s3.download_file(S3_BUCKET_NAME, s3_key, name)
 
 
-def train_yolo():
-    os.makedirs("runs", exist_ok=True)
-    with open("runs/tmp.txt", "w") as f:
-        f.write("Hello S3")
-    print("trained")
+def train(model):
+    if model == "yolo":
+        from yolo_trainer import train_main
+    else:
+        pass
+
+    try:
+        train_main()
+    except:
+        send_sns(
+            "Model training failed",
+            f"Training of model '{model}' failed somewhere, please check manually",
+        )
 
 
 def upload_to_s3(local_path, s3_path, zip_name="upload.zip"):
@@ -93,10 +101,7 @@ if __name__ == "__main__":
         download_dataset_from_s3(f"{dataset}.zip")
 
     time_start = time.time()
-
-    if model == "yolo":
-        train_yolo()
-
+    train(model)
     time_taken = time.time() - time_start
     s3_key = upload_to_s3("./runs", f"{model}_runs/", f"{model}_runs.zip")
     send_done_signal(model, time_taken, s3_key)
