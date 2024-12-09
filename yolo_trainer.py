@@ -120,7 +120,7 @@ def get_inference(model, test_base):
     for idx, result in enumerate(pred):
         inference += result.speed["inference"]
 
-    with open("./runs/inference_time.txt") as f:
+    with open("./runs/inference_time.txt", "w") as f:
         f.write(f"Average inference time: {inference/len(pred)}")
 
 
