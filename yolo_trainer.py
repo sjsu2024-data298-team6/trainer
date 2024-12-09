@@ -115,5 +115,14 @@ def get_inference(model, test_base):
 
     with open("./runs/iou_results.txt", "w") as f:
         f.write(results)
+
+    inference = 0
+    for idx, result in enumerate(pred):
+        inference += result.speed["inference"]
+
+    with open("./runs/inference_time.txt") as f:
+        f.write(f"Average inference time: {inference/len(pred)}")
+
+
 if __name__ == "__main__":
     train_main()
